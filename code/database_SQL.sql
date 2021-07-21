@@ -15,3 +15,10 @@ CREATE TABLE IF NOT EXISTS stock_price(
 
 INSERT INTO stock (symbol, company) VALUES ('AAPL', 'Apple');
 
+
+
+SELECT symbol, date, open, high, low, close
+FROM stock_price
+JOIN stock on stock.id =stock_price.stock_id
+WHERE symbol ="AAPL"
+ORDER By date;
