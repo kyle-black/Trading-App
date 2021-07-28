@@ -22,3 +22,11 @@ FROM stock_price
 JOIN stock on stock.id =stock_price.stock_id
 WHERE symbol ="AAPL"
 ORDER By date;
+
+
+SELECT * FROM(
+    SELECT symbol, name, stock_id, max(close), date
+    FROM stock_price JOIN stock on stock.id = stock_price.stock_id
+    Group BY stock_id
+    ORDER BY symbol)
+    WHERE DATE ='2021-07-22';

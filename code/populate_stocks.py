@@ -1,5 +1,6 @@
 import sqlite3, config
 import alpaca_trade_api as tradeapi
+import pandas as pd
 
 connection = sqlite3.connect(config.DB_FILE)
 connection.row_factory = sqlite3.Row
