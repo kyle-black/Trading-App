@@ -1,6 +1,6 @@
 import sqlite3
-
-connection= sqlite3.connect('../data/app.db')
+import config
+connection= sqlite3.connect(config.DB_FILE)
 
 cursor = connection.cursor()
 
@@ -23,7 +23,10 @@ cursor.execute("""
         high NOT NULL,
         low NOT NULL,
         close NOT NULL,
-        volume NOT NULL, 
+        volume NOT NULL,
+        sma_20,
+        sma_50,
+        rsi_14, 
         FOREIGN KEY (stock_id) REFERENCES stock (id)
     )
 """)
@@ -44,7 +47,7 @@ cursor.execute("""
         FOREIGN KEY(strategy_id) REFERENCES strategy(id)
 )""")
 
-strategies =['opening_range_breakout', 'opening_range_breakdown']
+strategies =['opening_range_breakout', 'Other_strategy']
 
 
 for strategy in strategies:
