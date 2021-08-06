@@ -21,8 +21,8 @@ def index(request: Request):
             FROM stock_price JOIN stock on stock.id = stock_price.stock_id
             Group BY stock_id
             ORDER BY symbol
-        )WHERE DATE =?
-        """,(date.today().isoformat(),))
+        )WHERE DATE =(select max(date) from stock_price)
+        """)
 
     elif stock_filter == 'new_closing_lows':
         cursor.execute("""
@@ -31,16 +31,34 @@ def index(request: Request):
             FROM stock_price JOIN stock on stock.id = stock_price.stock_id
             Group BY stock_id
             ORDER BY symbol
-        )WHERE DATE =?
-        """,(date.today().isoformat(),))
+        )WHERE DATE = (select max(date) from stock_price)
+        """)
     
     else:
         cursor.execute("""
             SELECT id, symbol, name FROM stock ORDER BY symbol
     """)
-    rows =cursor.fetchall()
+    #rows =cursor.fetchall()
+
+    rows = cursor.fetchall()
+    cursor.execute("""
+        select symbol, rsi_14, sma_20, sma_50, close
+        from stock join stock_price on stock_price.stock_id = stock.id
+        where date= (select max(date) from stock_price)    
+    """)
+
+    indicator_rows = cursor.fetchall()
+    indicator_values = {}
     
-    return templates.TemplateResponse('index.html',{"request": request, "stocks": rows })
+    for row in indicator_rows:
+        indicator_values[row['symbol']] = row
+    
+    print(indicator_values)
+    
+    
+
+    
+    return templates.TemplateResponse('index.html',{"request": request, "stocks": rows, "indicator_values": indicator_values})
 @app.get("/stock/{symbol}")
 def stock_detail(request: Request, symbol):
     connection =sqlite3.connect(config.DB_FILE)
